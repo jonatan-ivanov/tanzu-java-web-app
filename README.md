@@ -31,3 +31,23 @@ You can hit the spacebar to open the UI in a browser.
     to your Tiltfile. Otherwise, switch k8s contexts and restart Tilt.
     ```
 
+# Notes
+
+1. Run the Job with these parameters: https://tap-test-bed.svc.eng.vmware.com/job/create-tap-testbed/3378/
+2. Install docker cli, kubernetes cli, azure cli, tanzu cli (with the apps plugin), tilt cli
+3. [kubectx + kubens](https://github.com/ahmetb/kubectx), "a kubernetes UI app" are highly recommended
+
+Cluster: tap-aks-jivanov
+Workload: tanzu-java-web-app
+Docker repo: docker.io/jonatanivanov
+
+http://tap-gui.tap.tap-aks-jivanov.tapdemo.vmware.com
+http://spring-petclinic.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
+http://tanzu-java-web-app.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
+
+Useful commands:
+```
+kubectl get workloads.carto.run
+kubectl get httpproxy
+kubectl port-forward services/tanzu-java-web-app-00001-private 8888:80
+```
