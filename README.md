@@ -37,13 +37,13 @@ You can hit the spacebar to open the UI in a browser.
 2. Install docker cli, kubernetes cli, azure cli, tanzu cli (with the apps plugin), tilt cli
 3. [kubectx + kubens](https://github.com/ahmetb/kubectx), "a kubernetes UI app" are highly recommended
 
-Cluster: tap-aks-jivanov
-Workload: tanzu-java-web-app
-Docker repo: docker.io/jonatanivanov
+- Cluster: tap-aks-jivanov
+- Workload: tanzu-java-web-app
+- Docker repo: docker.io/jonatanivanov
 
-http://tap-gui.tap.tap-aks-jivanov.tapdemo.vmware.com
-http://spring-petclinic.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
-http://tanzu-java-web-app.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
+- http://tap-gui.tap.tap-aks-jivanov.tapdemo.vmware.com
+- http://spring-petclinic.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
+- http://tanzu-java-web-app.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
 
 Useful commands:
 ```
