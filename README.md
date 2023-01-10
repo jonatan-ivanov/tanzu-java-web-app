@@ -31,26 +31,45 @@ You can hit the spacebar to open the UI in a browser.
     to your Tiltfile. Otherwise, switch k8s contexts and restart Tilt.
     ```
 
+# Notes for my cluster
+
+- Cluster: tap-aks-jivanov
+- Workload: tanzu-java-web-app
+- Docker repo: docker.io/jonatanivanov
+
+- http://tap-gui.tap.tap-aks-jivanov.tapdemo.vmware.com
+- http://spring-petclinic.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
+- http://tanzu-java-web-app.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
+
+Useful commands:
+```
+kubectl get workloads.carto.run
+kubectl get httpproxy
+kubectl port-forward services/tanzu-java-web-app-00001-private 8888:80
+```
+
 # Walkthrough
-1. Run the Job with these parameters: https://tap-test-bed.svc.eng.vmware.com/job/create-tap-testbed/3378/
-2. Install docker cli, kubernetes cli, [azure cli](https://learn.microsoft.com/en-us/cli/azure/), tanzu cli (with the apps plugin), [tilt cli](https://github.com/tilt-dev/tilt)
-3. [kubectx + kubens](https://github.com/ahmetb/kubectx), "a kubernetes UI app" are highly recommended
-4. Install Tanzu CLI (with the apps plugin): https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.3/tap/GUID-install-tanzu-cli.html (make sure you download the version that matches to your TAP version, see in the jobs parameters)
-5. Follow the instructions in the email
-   1. You don't need to pass your creds to `az login`, just run `az login`, it'll open your browser
-   2. You might need to remove the kuberneres-cli config files in your `$HOME`
-6. Set the namespace to `my-apps` (you can use `kubens` or add the namespace to the `kubectl` command as an argument) and run `kubectl get pods` you should see petclinic pods, one of them should be running
-7. Run `kubectl get httpproxy -A`, it should give you the hostname for petclinic, the url should look like this:
-http://spring-petclinic.my-apps.tap.<CLUSTER-NAME>.tapdemo.vmware.com
-WARNING: you need to use a browser that will not upgrade your connection to HTTPS (HTTPS gives you connection reset)
-8. Run `kubectl get httpproxy -A`, it should give you the hostname for the TAP GUI, open it with a browser that lets you ignore TLS certificate errors
-9. Click on the add buton on he left, you should see the list of accelerators
-10. Click on Tanzu Java Web App (not the restful one)
-    1.  Set the name for the project
-    2.  Set the repository to `docker.io/<DOCKER-USERNAME>`
-    3.  Next, next, download, extract, open it with a text editor
-11. Open `config/workload.yaml`
-12. Add `apps.tanzu.vmware.com/has-tests: "true"` to `metadata.labels`, remove the whole `spec.source` block and add a `speck build` block, it should look like this:
+- Run the Job with these parameters: https://tap-test-bed.svc.eng.vmware.com/job/create-tap-testbed/3378/
+- Install docker cli, kubernetes cli, [azure cli](https://learn.microsoft.com/en-us/cli/azure/), tanzu cli (with the apps plugin, min 0.10.0), [tilt cli](https://github.com/tilt-dev/tilt)
+- [kubectx + kubens](https://github.com/ahmetb/kubectx), "a kubernetes UI app" are highly recommended
+- Install Tanzu CLI (with the apps plugin): https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.3/tap/GUID-install-tanzu-cli.html (make sure you download the version that matches to your TAP version, see in the jobs parameters)
+- Follow the instructions in the email
+  - You don't need to pass your creds to `az login`, just run `az login`, it'll open your browser
+  - If you get an exception during kube ctx set, you might need to remove the kuberneres-cli config files in your `$HOME`
+- Set the namespace to `my-apps` (you can use `kubens` or add the namespace to the `kubectl` command as an argument) and run `kubectl get pods` you should see petclinic pods, one of them should be running (`petclinic-db-...` is the actual app)
+- Run `kubectl get httpproxy -A`, it should give you the hostname for petclinic, the url should look like this:
+`http://spring-petclinic.my-apps.tap.<CLUSTER-NAME>.tapdemo.vmware.com`
+WARNING: you need to use a browser that will not upgrade your connection to HTTPS (HTTPS gives you connection reset) (e.g.: Chrome)
+- `kubectl get httpproxy -A` should also give you the hostname for the TAP GUI, the url should look like this:
+`http://tap-gui.tap.<CLUSTER-NAME>.tapdemo.vmware.com`
+WARNING: open it with a browser that lets you ignore TLS certificate errors (e.g.: Chrome)
+- Click on the add `(+)` button on he left, you should see the list of accelerators
+- Click on Tanzu Java Web App (not the "Restful" one)
+  - Set the name for the project
+  - Set the repository to `docker.io/<DOCKER-USERNAME>`
+  - Next, next, download, extract, open it with a text editor
+- Open `config/workload.yaml` with your editor
+- Add `apps.tanzu.vmware.com/has-tests: "true"` to `metadata.labels`, remove the whole `spec.source` block and add a `spec.build` block, it should look like this:
 ```
 apiVersion: carto.run/v1alpha1
 kind: Workload
@@ -71,28 +90,11 @@ spec:
     - name: BP_JVM_VERSION
       value: "17.*"
 ```
-13. Open `Tiltfile`
-    1.  Add `allow_k8s_contexts('<CONTEXT-NAME>')` to the bottom of the file (the context name is in the email or run `kubectl config current-context`)
-    2.  Modify the default value of the `NAMESPACE` variable: `NAMESPACE = os.getenv("NAMESPACE", default='my-apps')`
-14. Run `docker login`
-15. `tilt up` (hit space to open your browser to see the output) and wait for it to finish its job (it will push into your docker repo)
-16. Run `kubectl get httpproxy -A`, it should give you the hostname for your app, the url should look like this:
-http://<APP-NAME>.my-apps.tap.<CLUSTER-NAME>.tapdemo.vmware.com
+- Open `Tiltfile`
+  - Add `allow_k8s_contexts('<CONTEXT-NAME>')` to the bottom of the file (the context name is in the email or run `kubectl config current-context` to get it)
+  - Modify the default value of the `NAMESPACE` variable: `NAMESPACE = os.getenv("NAMESPACE", default='my-apps')`
+- Run `docker login`
+- Run `tilt up` (hit space to open your browser to see the output) and wait for it to finish (it will push your source code (!) into a repo under your DockerHub account)
+- Run `kubectl get httpproxy -A`, it should give you the hostname for your app, the url should look like this:
+`http://<APP-NAME>.my-apps.tap.<CLUSTER-NAME>.tapdemo.vmware.com`
 WARNING: you need to use a browser that will not upgrade your connection to HTTPS (HTTPS gives you connection reset)
-
-# Notes
-
-- Cluster: tap-aks-jivanov
-- Workload: tanzu-java-web-app
-- Docker repo: docker.io/jonatanivanov
-
-- http://tap-gui.tap.tap-aks-jivanov.tapdemo.vmware.com
-- http://spring-petclinic.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
-- http://tanzu-java-web-app.my-apps.tap.tap-aks-jivanov.tapdemo.vmware.com
-
-Useful commands:
-```
-kubectl get workloads.carto.run
-kubectl get httpproxy
-kubectl port-forward services/tanzu-java-web-app-00001-private 8888:80
-```
