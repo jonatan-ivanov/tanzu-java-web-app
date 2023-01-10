@@ -50,6 +50,14 @@ kubectl port-forward services/tanzu-java-web-app-00001-private 8888:80
 
 # Walkthrough
 - Run the Job with these parameters: https://tap-test-bed.svc.eng.vmware.com/job/create-tap-testbed/3378/
+```
+select_infra: AKS
+install_tap: yes
+select_k8s_version: 1.24.3
+select_tap_version: 1.4.0-rc.22
+create_workload: true
+lease_duration_in_days: 3
+```
 - Install docker cli, kubernetes cli, [azure cli](https://learn.microsoft.com/en-us/cli/azure/), tanzu cli (with the apps plugin, min 0.10.0), [tilt cli](https://github.com/tilt-dev/tilt)
 - [kubectx + kubens](https://github.com/ahmetb/kubectx), "a kubernetes UI app" are highly recommended
 - Install Tanzu CLI (with the apps plugin): https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.3/tap/GUID-install-tanzu-cli.html (make sure you download the version that matches to your TAP version, see in the jobs parameters)
